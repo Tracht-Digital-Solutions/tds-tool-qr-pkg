@@ -1,0 +1,53 @@
+{
+  "name": "@tracht-digital-solutions/tds-tool-qr",
+  "version": "0.1.0",
+  "description": "QR-Code-Generator tool package for the TDS tools platform (tds-tools). Client-side QR generation (URL / text / WLAN / vCard) with PNG + SVG export.",
+  "license": "UNLICENSED",
+  "private": false,
+  "type": "module",
+  "files": [
+    "dist",
+    "tools",
+    "islands",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./tools/*": "./tools/*",
+    "./islands/*": "./islands/*"
+  },
+  "scripts": {
+    "build": "tsup",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  },
+  "peerDependencies": {
+    "@tracht-digital-solutions/tds-tools-contract": "^1.0.0",
+    "astro": ">=6",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@tracht-digital-solutions/tds-tools-contract": "^1.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.0.0",
+    "rimraf": "^6.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tracht-Digital-Solutions/tds-tool-qr.git"
+  }
+}

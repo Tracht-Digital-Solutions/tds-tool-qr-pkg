@@ -1,0 +1,10 @@
+---
+// QR-Code-Generator tool shell. The heavy lifting (client-side QR rendering +
+// PNG/SVG export) lives in the hydrated island; this shell is just the card
+// chrome the site's tool-page template drops into place.
+import QrCode from "../islands/QrCode.tsx";
+---
+
+<div class="tool tool--qr">
+  <QrCode client:load />
+</div>
