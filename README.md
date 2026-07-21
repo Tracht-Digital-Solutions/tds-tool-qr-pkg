@@ -1,13 +1,13 @@
 # @tracht-digital-solutions/tds-tool-qr
 
-QR-Code-Generator tool package for the **TDS tools platform** (`tds-tools`).
+QR-Code-Generator tool package for the **TDS tools platform** (`tds-tools-frontend`).
 Client-side QR generation for URL/Text, WLAN access and vCard contacts, with live
 preview and PNG + SVG export. No network, no login — everything runs in the
 browser.
 
 This is a **tool package**: it exports a `ToolPackManifest`
 (`@tracht-digital-solutions/tds-tools-contract`) plus the raw `.astro`/`.tsx`
-components the `tds-tools` site composes at build time. Enable it by adding it to
+components the `tds-tools-frontend` site composes at build time. Enable it by adding it to
 the site's `toolHost({ packs: [...] })` array.
 
 ## Tools

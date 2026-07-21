@@ -1,6 +1,6 @@
-# AGENTS.md — tds-tool-qr
+# AGENTS.md — tds-tool-qr-pkg
 
-A **tool package** for the TDS tools platform. Read `tds-tools-contract`'s
+A **tool package** for the TDS tools platform. Read `tds-tools-contract-pkg`'s
 AGENTS.md for the platform model; this repo just contributes tools.
 
 ## Shape
@@ -20,6 +20,6 @@ AGENTS.md for the platform model; this repo just contributes tools.
 - Islands/.astro are **not** in this repo's tsconfig `include` — they compile at
   the site build. Keep them dependency-explicit (`qrcode` is a real dependency so
   the site installs it transitively).
-- Styling uses tds-shared tokens + Tailwind utilities provided by the site; don't
+- Styling uses tds-shared-pkg tokens + Tailwind utilities provided by the site; don't
   inline a design system here.
 - Version stays in the `0.1.x` line unless coordinated (the site pins `^0.1.x`).
