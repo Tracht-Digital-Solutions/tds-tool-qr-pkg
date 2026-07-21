@@ -25,4 +25,4 @@ npm run build        # tsup → dist manifest (islands ship raw)
 ```
 
 The `.astro` shell + `.tsx` island are validated at the **site** build (they are
-not in this package's tsconfig `include`). Release via the manual GitHub button.
+not in this package's tsconfig `include`). Releases run automatically on push to `main` (@latest); the manual button is for a minor/major bump.
