@@ -128,7 +128,11 @@ export default function QrCode() {
     download(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`, "qr-code.svg");
   };
 
-  const field = "w-full rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-paper)] px-3 py-2";
+  // Geometry, border and padding come from the shared primitive, never from
+  // this file: the pack ships no CSS, and the radius has to follow whatever
+  // surface composes it (`--tds-radius-input` is 0.5rem on the panel, 4px on
+  // marketing). A hand-rolled `rounded-lg` pinned it to one surface.
+  const field = "field-boxed w-full";
 
   return (
     <div className="qr-tool grid gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
@@ -146,12 +150,8 @@ export default function QrCode() {
               type="button"
               role="tab"
               aria-selected={mode === value}
+              className={mode === value ? "chip chip-active" : "chip"}
               onClick={() => setMode(value)}
-              className={`rounded-full px-4 py-1.5 text-sm ${
-                mode === value
-                  ? "bg-[color:var(--color-primary)] text-[color:var(--color-paper)]"
-                  : "border border-[color:var(--color-border)]"
-              }`}
             >
               {label}
             </button>
@@ -237,24 +237,31 @@ export default function QrCode() {
           </label>
           <label className="block text-sm">
             <span className="mb-1 block opacity-80">Vordergrund</span>
-            <input type="color" value={fg} onChange={(e) => setFg(e.target.value)} className="h-10 w-full" />
+            <input type="color" className="field-boxed h-10 w-full" value={fg} onChange={(e) => setFg(e.target.value)} />
           </label>
           <label className="block text-sm">
             <span className="mb-1 block opacity-80">Hintergrund</span>
-            <input type="color" value={bg} onChange={(e) => setBg(e.target.value)} className="h-10 w-full" />
+            <input type="color" className="field-boxed h-10 w-full" value={bg} onChange={(e) => setBg(e.target.value)} />
           </label>
         </div>
       </div>
 
       <div className="qr-tool__preview flex flex-col items-center gap-3">
-        <canvas ref={canvasRef} width={size} height={size} className="rounded-xl border border-[color:var(--color-border)]" />
+        {/* `max-w-full h-auto` is load-bearing, not cosmetic: the canvas takes
+            its intrinsic width from the size slider (up to 640px), and inside
+            the tool card's padding that overflowed a 375px viewport from the
+            day this shipped. `body { overflow-x: hidden }` CLIPS that instead
+            of revealing it, so there was no scrollbar and no warning — the
+            preview, the download buttons and the page's right edge were simply
+            gone on a phone. */}
+        <canvas ref={canvasRef} width={size} height={size} className="tds-card h-auto max-w-full" />
         {error && <p className="status-pill status-pill--danger text-sm">{error}</p>}
         {!payload && !error && <p className="text-sm opacity-70">Gib Daten ein, um den QR-Code zu erzeugen.</p>}
         <div className="flex gap-2">
-          <button type="button" onClick={downloadPng} disabled={!payload} className="rounded-lg bg-[color:var(--color-primary)] px-4 py-2 text-sm text-[color:var(--color-paper)] disabled:opacity-50">
+          <button type="button" onClick={downloadPng} disabled={!payload} className="btn btn-primary">
             PNG herunterladen
           </button>
-          <button type="button" onClick={downloadSvg} disabled={!payload} className="rounded-lg border border-[color:var(--color-border)] px-4 py-2 text-sm disabled:opacity-50">
+          <button type="button" onClick={downloadSvg} disabled={!payload} className="btn btn-ghost">
             SVG herunterladen
           </button>
         </div>

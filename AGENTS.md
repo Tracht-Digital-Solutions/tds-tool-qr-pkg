@@ -29,6 +29,29 @@ AGENTS.md for the platform model; this repo just contributes tools.
 
 ## Gotchas
 
+- **This pack ships NO CSS — every control must carry a shared class.** The tools
+  site renders on the `panel` surface, and a surface layer only sets tokens: they
+  reach an element through `btn` / `chip` / `field-boxed` / `tds-card`. A
+  `<button>` without `btn` therefore has no padding, no radius and no 44px touch
+  target, and an `<input>` without `field-boxed` renders **invisible**, because
+  Tailwind preflight zeroes borders.
+  Until 2026-08-16 every button in this pack was bare and the markup wrote its own
+  radii — `rounded-full` tabs (the *marketing* pill) and `rounded-lg` inputs, long
+  after the site had moved to the panel. That is why the tools rounded differently
+  from the panels. `npm run lint:primitives` runs in CI and fails on a bare
+  control; the script is a byte-identical copy of the seed in `tds-ext-template-pkg`.
+- **Never hand-author a radius, and do not reach for `rounded-[var(--tds-radius-*)]`
+  either.** Tailwind does not generate arbitrary values out of a package inside
+  `node_modules`, so from here that ships as no rule at all. Use the shared class.
+- **Write `className` BEFORE the event handler on a control.** `lint-primitives` is
+  a regex scan and its tag match stops at the first `>`, which an arrow function
+  (`onClick={() => …}`) supplies — so a correctly classed control listed after its
+  handler is reported as bare. All 14 repos carrying the script already follow this
+  order; keep it rather than diverging one copy.
+- **`islands/` is NOT type-checked here** (`tsconfig` covers `src/**/*` only). The
+  islands are compiled by the tds-tools-frontend build — that build is the real
+  gate for a markup change, not `npm run type-check`.
+
 - `component` in the manifest is a **package subpath** (`@…/tds-tool-qr/tools/QrCode.astro`),
   resolved via `exports` — never a relative path.
 - Tool `id` + `slug` must stay globally unique across all composed packs (the
