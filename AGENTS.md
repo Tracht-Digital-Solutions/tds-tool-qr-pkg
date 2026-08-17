@@ -43,6 +43,14 @@ AGENTS.md for the platform model; this repo just contributes tools.
 - **Never hand-author a radius, and do not reach for `rounded-[var(--tds-radius-*)]`
   either.** Tailwind does not generate arbitrary values out of a package inside
   `node_modules`, so from here that ships as no rule at all. Use the shared class.
+- **Don't draw a line — the consuming site is borderless.** `tds-tools-frontend`
+  renders on the panel surface's flat variant (`data-flat`, tds-shared 0.24.2):
+  no outlines anywhere, separation by fill, tone and spacing. A hand-authored
+  `border-t` between the input group and the options grid survived that change
+  and was, verifiably, the only 1px line left on the entire site — replaced by
+  padding on 2026-08-17. `lint-primitives` does not check for this (a border is
+  not a missing class), and neither does the build; walk the rendered page at
+  1280 and 375 and count `borderWidth > 0`.
 - **Attribute order no longer matters, and neither does what you name a class
   constant** (fixed 2026-08-16). `lint-primitives` used to match a tag with
   `[^>]*>`, which stops at the first `>` — and an arrow handler

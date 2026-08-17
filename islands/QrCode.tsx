@@ -221,7 +221,12 @@ export default function QrCode() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3 border-t border-[color:var(--color-border)] pt-4">
+        {/* Separated by SPACING, not by a rule. The tools site renders on the
+            panel surface's flat variant (`data-flat`, tds-shared 0.24.2) —
+            no outlines anywhere — and this `border-t` was the single 1px line
+            left on the whole site once that shipped. Judge it in a browser:
+            it is invisible in a diff and obvious on the page. */}
+        <div className="grid grid-cols-2 gap-3 pt-6">
           <label className="block text-sm">
             <span className="mb-1 block opacity-80">Fehlerkorrektur</span>
             <select className={field} value={ecc} onChange={(e) => setEcc(e.target.value as Ecc)}>
