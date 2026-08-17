@@ -2,9 +2,20 @@
 // QR-Code-Generator tool shell. The heavy lifting (client-side QR rendering +
 // PNG/SVG export) lives in the hydrated island; this shell is just the card
 // chrome the site's tool-page template drops into place.
+//
+// `lang` comes from that template so the island renders its labels in the
+// page's language. It defaults to German at both levels: a consumer that
+// renders the shell without the prop gets exactly the behaviour it had before
+// the English tree existed.
 import QrCode from "../islands/QrCode.tsx";
+
+interface Props {
+  lang?: "de" | "en";
+}
+
+const { lang = "de" } = Astro.props;
 ---
 
 <div class="tool tool--qr">
-  <QrCode client:load />
+  <QrCode client:load lang={lang} />
 </div>

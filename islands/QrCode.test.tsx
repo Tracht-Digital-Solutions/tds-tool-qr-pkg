@@ -72,7 +72,7 @@ describe("URL / text mode", () => {
     const area = screen.getByLabelText("URL oder Text");
     await user().clear(area);
 
-    expect(await screen.findByText("Gib Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
+    expect(await screen.findByText("Geben Sie Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
   });
 });
 
@@ -84,7 +84,7 @@ describe("WLAN payload", () => {
 
   it("produces nothing until an SSID is given", async () => {
     await goWifi();
-    expect(await screen.findByText("Gib Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
+    expect(await screen.findByText("Geben Sie Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
   });
 
   it("builds the standard WIFI: payload", async () => {
@@ -142,7 +142,7 @@ describe("vCard payload", () => {
 
   it("produces nothing until name, phone or e-mail is given", async () => {
     await goVcard();
-    expect(await screen.findByText("Gib Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
+    expect(await screen.findByText("Geben Sie Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
   });
 
   it("builds a minimal valid vCard from just a name", async () => {
@@ -308,5 +308,39 @@ describe("mode switching", () => {
 
     await user().selectOptions(screen.getByLabelText("Verschlüsselung"), "nopass");
     expect(screen.queryByLabelText("Passwort")).toBeNull();
+  });
+});
+
+/**
+ * The English branch. Every case above renders without props and so doubles
+ * as the regression test for the German default.
+ *
+ * The PAYLOADS are not translated — a vCard's field names and a Wi-Fi
+ * string's `WIFI:T:WPA;S:…` grammar are format, not copy. A scanner would
+ * stop understanding them the moment they were localised, which is what the
+ * last case pins.
+ */
+describe("in English", () => {
+  it("translates the mode tabs", () => {
+    render(<QrCode lang="en" />);
+    expect(screen.getByRole("tab", { name: "Wi-Fi" })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Contact (vCard)" })).toBeDefined();
+    expect(screen.queryByRole("tab", { name: "WLAN" })).toBeNull();
+  });
+
+  it("translates the download buttons", () => {
+    render(<QrCode lang="en" />);
+    expect(screen.getByRole("button", { name: "Download PNG" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Download SVG" })).toBeDefined();
+  });
+
+  it("keeps the Wi-Fi payload grammar in both languages", async () => {
+    const u = userEvent.setup({ delay: null });
+    render(<QrCode lang="en" />);
+    await u.click(screen.getByRole("tab", { name: "Wi-Fi" }));
+    await u.type(screen.getByLabelText(/Network name/), "Werkstatt");
+    // The payload is what a scanner reads. It must stay `WIFI:T:…;S:…;`
+    // regardless of the interface language.
+    await waitFor(() => expect(lastPayload()).toMatch(/^WIFI:S:Werkstatt;T:WPA;/));
   });
 });

@@ -51,12 +51,115 @@ function buildPayload(state: {
   return state.text;
 }
 
+/** See the tools-site convention: labels are translated, logic is not. */
+type Lang = "de" | "en";
+
+interface Strings {
+  renderFailed: string;
+  qrType: string;
+  tabUrl: string;
+  tabWifi: string;
+  tabVcard: string;
+  urlOrText: string;
+  ssid: string;
+  encryption: string;
+  noPassword: string;
+  password: string;
+  hiddenNetwork: string;
+  name: string;
+  company: string;
+  phone: string;
+  email: string;
+  website: string;
+  optional: string;
+  ecc: string;
+  eccLow: string;
+  eccMedium: string;
+  eccHigh: string;
+  eccVeryHigh: string;
+  size: string;
+  foreground: string;
+  background: string;
+  emptyHint: string;
+  downloadPng: string;
+  downloadSvg: string;
+}
+
+/** German is the default — every existing test here asserts German labels. */
+const STRINGS = {
+  de: {
+    renderFailed: "QR-Code konnte nicht erstellt werden.",
+    qrType: "QR-Typ",
+    tabUrl: "URL / Text",
+    tabWifi: "WLAN",
+    tabVcard: "Kontakt (vCard)",
+    urlOrText: "URL oder Text",
+    ssid: "Netzwerkname (SSID)",
+    encryption: "Verschlüsselung",
+    noPassword: "Kein Passwort",
+    password: "Passwort",
+    hiddenNetwork: "Verstecktes Netzwerk",
+    name: "Name",
+    company: "Firma",
+    phone: "Telefon",
+    email: "E-Mail",
+    website: "Website",
+    optional: "(optional)",
+    ecc: "Fehlerkorrektur",
+    eccLow: "Niedrig (L)",
+    eccMedium: "Mittel (M)",
+    eccHigh: "Hoch (Q)",
+    eccVeryHigh: "Sehr hoch (H)",
+    size: "Größe",
+    foreground: "Vordergrund",
+    background: "Hintergrund",
+    emptyHint: "Geben Sie Daten ein, um den QR-Code zu erzeugen.",
+    downloadPng: "PNG herunterladen",
+    downloadSvg: "SVG herunterladen",
+  },
+  en: {
+    renderFailed: "The QR code could not be created.",
+    qrType: "QR type",
+    tabUrl: "URL / text",
+    tabWifi: "Wi-Fi",
+    tabVcard: "Contact (vCard)",
+    urlOrText: "URL or text",
+    ssid: "Network name (SSID)",
+    encryption: "Encryption",
+    noPassword: "No password",
+    password: "Password",
+    hiddenNetwork: "Hidden network",
+    name: "Name",
+    company: "Company",
+    phone: "Phone",
+    email: "Email",
+    website: "Website",
+    optional: "(optional)",
+    ecc: "Error correction",
+    eccLow: "Low (L)",
+    eccMedium: "Medium (M)",
+    eccHigh: "High (Q)",
+    eccVeryHigh: "Very high (H)",
+    size: "Size",
+    foreground: "Foreground",
+    background: "Background",
+    emptyHint: "Enter some data to generate the QR code.",
+    downloadPng: "Download PNG",
+    downloadSvg: "Download SVG",
+  },
+} satisfies Record<Lang, Strings>;
+
+interface Props {
+  lang?: Lang;
+}
+
 /**
  * Fully client-side QR-Code-Generator: URL/Text, WLAN and vCard payloads, live
  * canvas preview, and PNG + SVG download. No network, no login — everything
  * happens in the browser.
  */
-export default function QrCode() {
+export default function QrCode({ lang = "de" }: Props) {
+  const t = STRINGS[lang];
   const [mode, setMode] = useState<Mode>("url");
   const [text, setText] = useState("https://tracht-digital.de");
   const [ssid, setSsid] = useState("");
@@ -99,7 +202,7 @@ export default function QrCode() {
       color: { dark: fg, light: bg },
     })
       .then(() => setError(null))
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : "QR-Code konnte nicht erstellt werden."));
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : t.renderFailed));
   }, [payload, size, ecc, fg, bg]);
 
   const download = (href: string, filename: string) => {
@@ -137,12 +240,12 @@ export default function QrCode() {
   return (
     <div className="qr-tool grid gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
       <div className="qr-tool__form space-y-4">
-        <div className="flex flex-wrap gap-2" role="tablist" aria-label="QR-Typ">
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label={t.qrType}>
           {(
             [
-              ["url", "URL / Text"],
-              ["wifi", "WLAN"],
-              ["vcard", "Kontakt (vCard)"],
+              ["url", t.tabUrl],
+              ["wifi", t.tabWifi],
+              ["vcard", t.tabVcard],
             ] as [Mode, string][]
           ).map(([value, label]) => (
             <button
@@ -160,7 +263,7 @@ export default function QrCode() {
 
         {mode === "url" && (
           <label className="block text-sm">
-            <span className="mb-1 block opacity-80">URL oder Text</span>
+            <span className="mb-1 block opacity-80">{t.urlOrText}</span>
             <textarea className={field} rows={3} value={text} onChange={(e) => setText(e.target.value)} />
           </label>
         )}
@@ -168,11 +271,11 @@ export default function QrCode() {
         {mode === "wifi" && (
           <div className="space-y-3">
             <label className="block text-sm">
-              <span className="mb-1 block opacity-80">Netzwerkname (SSID)</span>
+              <span className="mb-1 block opacity-80">{t.ssid}</span>
               <input className={field} value={ssid} onChange={(e) => setSsid(e.target.value)} />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block opacity-80">Verschlüsselung</span>
+              <span className="mb-1 block opacity-80">{t.encryption}</span>
               <select
                 className={field}
                 value={encryption}
@@ -180,18 +283,18 @@ export default function QrCode() {
               >
                 <option value="WPA">WPA / WPA2 / WPA3</option>
                 <option value="WEP">WEP</option>
-                <option value="nopass">Kein Passwort</option>
+                <option value="nopass">{t.noPassword}</option>
               </select>
             </label>
             {encryption !== "nopass" && (
               <label className="block text-sm">
-                <span className="mb-1 block opacity-80">Passwort</span>
+                <span className="mb-1 block opacity-80">{t.password}</span>
                 <input className={field} value={password} onChange={(e) => setPassword(e.target.value)} />
               </label>
             )}
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={hidden} onChange={(e) => setHidden(e.target.checked)} />
-              Verstecktes Netzwerk
+              {t.hiddenNetwork}
             </label>
           </div>
         )}
@@ -199,23 +302,23 @@ export default function QrCode() {
         {mode === "vcard" && (
           <div className="space-y-3">
             <label className="block text-sm">
-              <span className="mb-1 block opacity-80">Name</span>
+              <span className="mb-1 block opacity-80">{t.name}</span>
               <input className={field} value={name} onChange={(e) => setName(e.target.value)} />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block opacity-80">Firma (optional)</span>
+              <span className="mb-1 block opacity-80">{t.company} {t.optional}</span>
               <input className={field} value={org} onChange={(e) => setOrg(e.target.value)} />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block opacity-80">Telefon (optional)</span>
+              <span className="mb-1 block opacity-80">{t.phone} {t.optional}</span>
               <input className={field} value={phone} onChange={(e) => setPhone(e.target.value)} />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block opacity-80">E-Mail (optional)</span>
+              <span className="mb-1 block opacity-80">{t.email} {t.optional}</span>
               <input className={field} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block opacity-80">Website (optional)</span>
+              <span className="mb-1 block opacity-80">{t.website} {t.optional}</span>
               <input className={field} value={vurl} onChange={(e) => setVurl(e.target.value)} />
             </label>
           </div>
@@ -228,24 +331,24 @@ export default function QrCode() {
             it is invisible in a diff and obvious on the page. */}
         <div className="grid grid-cols-2 gap-3 pt-6">
           <label className="block text-sm">
-            <span className="mb-1 block opacity-80">Fehlerkorrektur</span>
+            <span className="mb-1 block opacity-80">{t.ecc}</span>
             <select className={field} value={ecc} onChange={(e) => setEcc(e.target.value as Ecc)}>
-              <option value="L">Niedrig (L)</option>
-              <option value="M">Mittel (M)</option>
-              <option value="Q">Hoch (Q)</option>
-              <option value="H">Sehr hoch (H)</option>
+              <option value="L">{t.eccLow}</option>
+              <option value="M">{t.eccMedium}</option>
+              <option value="Q">{t.eccHigh}</option>
+              <option value="H">{t.eccVeryHigh}</option>
             </select>
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block opacity-80">Größe: {size}px</span>
+            <span className="mb-1 block opacity-80">{t.size}: {size}px</span>
             <input type="range" min={128} max={640} step={16} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full" />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block opacity-80">Vordergrund</span>
+            <span className="mb-1 block opacity-80">{t.foreground}</span>
             <input type="color" className="field-boxed h-10 w-full" value={fg} onChange={(e) => setFg(e.target.value)} />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block opacity-80">Hintergrund</span>
+            <span className="mb-1 block opacity-80">{t.background}</span>
             <input type="color" className="field-boxed h-10 w-full" value={bg} onChange={(e) => setBg(e.target.value)} />
           </label>
         </div>
@@ -261,13 +364,13 @@ export default function QrCode() {
             gone on a phone. */}
         <canvas ref={canvasRef} width={size} height={size} className="tds-card h-auto max-w-full" />
         {error && <p className="status-pill status-pill--danger text-sm">{error}</p>}
-        {!payload && !error && <p className="text-sm opacity-70">Gib Daten ein, um den QR-Code zu erzeugen.</p>}
+        {!payload && !error && <p className="text-sm opacity-70">{t.emptyHint}</p>}
         <div className="flex gap-2">
           <button type="button" onClick={downloadPng} disabled={!payload} className="btn btn-primary">
-            PNG herunterladen
+            {t.downloadPng}
           </button>
           <button type="button" onClick={downloadSvg} disabled={!payload} className="btn btn-ghost">
-            SVG herunterladen
+            {t.downloadSvg}
           </button>
         </div>
       </div>
