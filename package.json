@@ -1,6 +1,6 @@
 {
   "name": "@tracht-digital-solutions/tds-tool-qr",
-  "version": "0.1.10",
+  "version": "26.6.0",
   "description": "QR-Code-Generator tool package for the TDS tools platform (tds-tools). Client-side QR generation (URL / text / WLAN / vCard) with PNG + SVG export.",
   "license": "UNLICENSED",
   "private": false,
@@ -32,7 +32,7 @@
     "qrcode": "^1.5.4"
   },
   "peerDependencies": {
-    "@tracht-digital-solutions/tds-tools-contract": "^1.0.0",
+    "@tracht-digital-solutions/tds-tools-contract": "^26.7.0",
     "astro": ">=6",
     "react": ">=18",
     "react-dom": ">=18"
@@ -41,7 +41,7 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
-    "@tracht-digital-solutions/tds-tools-contract": "^1.0.0",
+    "@tracht-digital-solutions/tds-tools-contract": "^26.7.0",
     "@types/node": "^22.10.0",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19.0.0",

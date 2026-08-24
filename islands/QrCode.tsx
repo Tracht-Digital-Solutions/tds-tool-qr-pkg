@@ -363,7 +363,7 @@ export default function QrCode({ lang = "de" }: Props) {
             preview, the download buttons and the page's right edge were simply
             gone on a phone. */}
         <canvas ref={canvasRef} width={size} height={size} className="tds-card h-auto max-w-full" />
-        {error && <p className="status-pill status-pill--danger text-sm">{error}</p>}
+        {error && <p className="status-pill status-pill--danger text-sm" role="alert">{error}</p>}
         {!payload && !error && <p className="text-sm opacity-70">{t.emptyHint}</p>}
         <div className="flex gap-2">
           <button type="button" onClick={downloadPng} disabled={!payload} className="btn btn-primary">
