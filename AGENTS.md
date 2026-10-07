@@ -1,94 +1,39 @@
 # AGENTS.md — tds-tool-qr-pkg
 
-A **tool package** for the TDS tools platform. Read `tds-tools-contract-pkg`'s
-AGENTS.md for the platform model; this repo just contributes tools.
+Tool pack for the public tools platform: the QR-code generator (URL, text, Wi-Fi,
+PNG/SVG export). It builds against `@tracht-digital-solutions/tds-tools-contract`
+and is composed into `tds-tools-frontend` at build time. Everything runs in the
+browser; there is no network call.
 
-## Shape
+The platform rules (unique ids, package-subpath components, contract stability)
+live in `tds-tools-contract-pkg/AGENTS.md`. Read that first.
 
-- `src/index.ts` — the `ToolPackManifest` (`defineToolPack` + `defineTool`). The
-  only file tsup compiles + the only file `tsc` type-checks.
-- `tools/*.astro` — tool shells the site's `/tools/[slug]` template renders.
-- `islands/*.tsx` — hydrated React islands (`client:load`). Fully client-side;
-  QR rendering + PNG/SVG export via the `qrcode` dependency, no network.
+## Commands
 
-## Tests
+```bash
+npm install --no-package-lock   # never npm ci; CI has no lockfile
+npm run build                   # tsup, compiles src/index.ts only
+npm run type-check              # tsc, covers src/** only
+npm run test:run                # vitest
+npm run lint:primitives         # fails on a control without a shared class
+```
 
-`npm run test:run` (vitest). The island opts into jsdom via a
-`@vitest-environment` docblock; the manifest suite runs in node.
+## Hard rules
 
-- **The `qrcode` library is mocked**, so the tests assert the exact payload
-  string handed to it. That payload never reaches the DOM, so there is no other
-  way to observe it — and it is the part that breaks silently (a bad `WIFI:`
-  string still produces a scannable code that simply does nothing).
-- `wifiEscape` covers `\ ; , : "`. Removing the escape makes
-  `escapes the reserved characters in SSID and password` fail — verified.
-- Mocking also keeps jsdom away from real canvas rendering, which it cannot do.
-  `toDataURL` and `HTMLAnchorElement.click` are stubbed for the download paths.
-- The `margin: 2` assertion guards the QR quiet zone; dropping it to 0 produces
-  codes many scanners reject.
+- **Every push to `main` publishes a `@latest` patch** and rebuilds `tds-tools-frontend`.
+  Don't bump the version by hand for a patch. A docs-only commit carries `[skip ci]`.
+- Ship no CSS. Every control carries a shared `tds-shared` class.
+- `component` in the manifest is a package subpath resolved via `exports`, never a relative path.
+- Tool `id` and `slug` stay unique across all composed packs.
+- Stay inside the `0.2.x` line. The site pins `^0.2.0`, so a minor bump needs a coordinated repin.
+- The real gate for `islands/` and `tools/` is the `tds-tools-frontend` build, not `type-check` here.
 
-## Gotchas
+## Topic files
 
-- **This pack ships NO CSS — every control must carry a shared class.** The tools
-  site renders on the `blog` surface (it moved there 2026-08-17; it was `panel`
-  before, and both are token-only layers), and a surface layer only sets tokens: they
-  reach an element through `btn` / `chip` / `field-boxed` / `tds-card`. A
-  `<button>` without `btn` therefore has no padding, no radius and no 44px touch
-  target, and an `<input>` without `field-boxed` renders **invisible**, because
-  Tailwind preflight zeroes borders.
-  Until 2026-08-16 every button in this pack was bare and the markup wrote its own
-  radii — `rounded-full` tabs (the *marketing* pill) and `rounded-lg` inputs, long
-  after the site had left the marketing surface. That is why the tools rounded
-  differently from everything around them. `npm run lint:primitives` runs in CI and fails on a bare
-  control; the script is a byte-identical copy of the seed in `tds-ext-template-pkg`.
-- **`status-pill` ist ein Etikett, keine Blockmeldung.** Die Plakette hat
-  `white-space: nowrap` und Versalien und ist für ein Wort gedacht. Eine
-  Fehlermeldung darin bricht nicht um, sondern macht das Dokument breiter als
-  das Fenster: im JSON-Formatter waren es 460px bei 390px Fenster, weil die
-  Meldung den Text des Browsers trägt und damit beliebig lang ist. Zu sehen
-  ist davon nichts — `body { overflow-x: hidden }` schneidet den Überhang ab,
-  man findet es nur, indem man `document.documentElement.scrollWidth` misst.
-  Für eine Meldung über mehrere Zeilen ist `tds-alert` (`--success` /
-  `--warning` / `--danger`) die richtige Klasse; tds-shared sagt das im
-  Kommentar über `.status-pill` auch selbst. Ein `<span>` als kurzes Etikett
-  neben etwas anderem bleibt eine Plakette.
-- **Never hand-author a radius, and do not reach for `rounded-[var(--tds-radius-*)]`
-  either.** Tailwind does not generate arbitrary values out of a package inside
-  `node_modules`, so from here that ships as no rule at all. Use the shared class.
-- **Don't draw a line — the consuming site is borderless.** `tds-tools-frontend`
-  renders the blog surface's flat variant (`data-flat`, tds-shared 0.25.1):
-  no outlines anywhere, separation by fill, tone and spacing. A hand-authored
-  `border-t` between the input group and the options grid survived that change
-  and was, verifiably, the only 1px line left on the entire site — replaced by
-  padding on 2026-08-17. `lint-primitives` does not check for this (a border is
-  not a missing class), and neither does the build; walk the rendered page at
-  1280 and 375 and count `borderWidth > 0`.
-- **Attribute order no longer matters, and neither does what you name a class
-  constant** (fixed 2026-08-16). `lint-primitives` used to match a tag with
-  `[^>]*>`, which stops at the first `>` — and an arrow handler
-  (`onClick={() => …}`) supplies one, so a correctly classed control written after
-  its handler was reported as bare. It also read `className={x}` as the literal
-  text `x`, so `{field}` passed and `{area}` did not. The script now walks the tag
-  tracking quotes and brace depth, and resolves a local `const` to its string.
-  Both workarounds are gone; all 20 repos carry the identical fixed script.
-- **`islands/` is NOT type-checked here** (`tsconfig` covers `src/**/*` only). The
-  islands are compiled by the tds-tools-frontend build — that build is the real
-  gate for a markup change, not `npm run type-check`.
+| File | Read before |
+|---|---|
+| [docs/agents/architecture.md](docs/agents/architecture.md) | Changing the manifest, the file layout or dependencies |
+| [docs/agents/conventions.md](docs/agents/conventions.md) | Touching any markup or styling in `islands/` or `tools/` |
+| [docs/agents/testing.md](docs/agents/testing.md) | Writing or changing tests, or the QR payload logic |
 
-- `component` in the manifest is a **package subpath** (`@…/tds-tool-qr/tools/QrCode.astro`),
-  resolved via `exports` — never a relative path.
-- Tool `id` + `slug` must stay globally unique across all composed packs (the
-  site build hard-errors on a collision).
-- Islands/.astro are **not** in this repo's tsconfig `include` — they compile at
-  the site build. Keep them dependency-explicit (`qrcode` is a real dependency so
-  the site installs it transitively).
-- Styling uses tds-shared-pkg tokens + Tailwind utilities provided by the site; don't
-  inline a design system here.
-- Version stays in the `0.1.x` line unless coordinated (the site pins `^0.1.x`).
-- **`tds-appear` belongs to `tds-shared`, not to this pack.** The class fades a
-  result into place the moment it is INSERTED — no script, no runtime, which is
-  the only kind of motion a public tool may carry. Two consequences: the CSS
-  arrives with the site's `tds-shared` (>=0.38.8), so the class does nothing in
-  a site pinned lower; and an element that merely changes its text does not
-  re-animate, so a permanent output box needs a `key` on the value to be
-  re-inserted.
+Workspace rules: `../CLAUDE.md`. Cross-repo state: `../MIGRATION-STATUS.md`.
