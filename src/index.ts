@@ -15,14 +15,22 @@ export default defineToolPack({
       name: "QR-Code-Generator",
       category: "marketing",
       description:
-        "Erstelle QR-Codes für URLs, Text, WLAN-Zugänge oder Kontaktdaten — direkt im Browser, mit PNG- und SVG-Export.",
+        "QR-Codes kostenlos erstellen, ohne Anmeldung: für Links, Text, WLAN-Zugänge oder Kontaktdaten. Download als PNG oder SVG; die Codes laufen nicht ab.",
       icon: "qr-code",
-      keywords: ["qr", "qr-code", "generator", "wlan", "vcard", "url"],
+      keywords: [
+        "qr code erstellen",
+        "qr code kostenlos",
+        "qr code ohne anmeldung",
+        "qr-code-generator",
+        "wlan qr code",
+        "vcard",
+        "url",
+      ],
       component: "@tracht-digital-solutions/tds-tool-qr/tools/QrCode.astro",
       seo: {
-        title: "QR-Code-Generator — kostenlos, ohne Anmeldung",
+        title: "QR-Code erstellen – kostenlos & ohne Anmeldung",
         description:
-          "Kostenloser QR-Code-Generator für URL, Text, WLAN und vCard. PNG- und SVG-Download, alles lokal im Browser — keine Anmeldung nötig.",
+          "QR-Code kostenlos erstellen, ohne Anmeldung und ohne Ablaufdatum: für Link, Text, WLAN und vCard. Download als PNG oder SVG, direkt im Browser.",
         jsonLdType: "WebApplication",
       },
     }),
