@@ -41,3 +41,14 @@ payload truncates, and the code still scans but joins nothing.
 
 The `.astro` shell + `.tsx` island are validated at the **site** build (they are
 not in this package's tsconfig `include`). Releases run automatically on push to `main` (@latest); the manual button is for a minor/major bump.
+
+## Lizenz / License
+
+**Öffentlich einsehbar, alle Rechte vorbehalten.** Der Code kann gelesen und
+zur Beurteilung der Programmierkenntnisse betrachtet werden. Es besteht keine
+allgemeine Erlaubnis zum Kopieren, Verändern oder kommerziellen Weiterverwenden.
+Die vollständigen Bedingungen und Ausnahmen stehen in [LICENSE](LICENSE).
+
+**Publicly viewable, all rights reserved.** Public access permits inspection of
+the code, but grants no general permission to copy, modify or commercially reuse
+it. See [LICENSE](LICENSE) for the complete terms and exceptions.
