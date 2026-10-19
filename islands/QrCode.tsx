@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
+import { Alert } from "@tracht-digital-solutions/tds-shared/alert";
+import { downloadUrl } from "@tracht-digital-solutions/tds-shared/download";
 
 type Mode = "url" | "wifi" | "vcard";
 type Ecc = "L" | "M" | "Q" | "H";
@@ -205,14 +207,7 @@ export default function QrCode({ lang = "de" }: Props) {
       .catch((e: unknown) => setError(e instanceof Error ? e.message : t.renderFailed));
   }, [payload, size, ecc, fg, bg]);
 
-  const download = (href: string, filename: string) => {
-    const a = document.createElement("a");
-    a.href = href;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
+  const download = (href: string, filename: string) => downloadUrl(href, filename);
 
   const downloadPng = () => {
     const canvas = canvasRef.current;
@@ -363,7 +358,7 @@ export default function QrCode({ lang = "de" }: Props) {
             preview, the download buttons and the page's right edge were simply
             gone on a phone. */}
         <canvas ref={canvasRef} width={size} height={size} className="tds-card h-auto max-w-full" />
-        {error && <p className="tds-alert tds-alert--danger tds-appear" role="alert">{error}</p>}
+        <Alert>{error}</Alert>
         {!payload && !error && <p className="text-sm opacity-70">{t.emptyHint}</p>}
         <div className="flex gap-2">
           <button type="button" onClick={downloadPng} disabled={!payload} className="btn btn-primary">
