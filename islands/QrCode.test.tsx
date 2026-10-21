@@ -72,7 +72,7 @@ describe("URL / text mode", () => {
     const area = screen.getByLabelText("URL oder Text");
     await user().clear(area);
 
-    expect(await screen.findByText("Geben Sie Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
+    expect(await screen.findByText("Sobald Daten eingetragen sind, entsteht hier der QR-Code.")).toBeDefined();
   });
 });
 
@@ -84,7 +84,7 @@ describe("WLAN payload", () => {
 
   it("produces nothing until an SSID is given", async () => {
     await goWifi();
-    expect(await screen.findByText("Geben Sie Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
+    expect(await screen.findByText("Sobald Daten eingetragen sind, entsteht hier der QR-Code.")).toBeDefined();
   });
 
   it("builds the standard WIFI: payload", async () => {
@@ -142,7 +142,7 @@ describe("vCard payload", () => {
 
   it("produces nothing until name, phone or e-mail is given", async () => {
     await goVcard();
-    expect(await screen.findByText("Geben Sie Daten ein, um den QR-Code zu erzeugen.")).toBeDefined();
+    expect(await screen.findByText("Sobald Daten eingetragen sind, entsteht hier der QR-Code.")).toBeDefined();
   });
 
   it("builds a minimal valid vCard from just a name", async () => {

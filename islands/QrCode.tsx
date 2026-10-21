@@ -115,7 +115,7 @@ const STRINGS = {
     size: "Größe",
     foreground: "Vordergrund",
     background: "Hintergrund",
-    emptyHint: "Geben Sie Daten ein, um den QR-Code zu erzeugen.",
+    emptyHint: "Sobald Daten eingetragen sind, entsteht hier der QR-Code.",
     downloadPng: "PNG herunterladen",
     downloadSvg: "SVG herunterladen",
   },
